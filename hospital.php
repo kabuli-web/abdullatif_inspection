@@ -12,11 +12,11 @@
       <!-- Content Header (Page header) -->
       <section class="content-header">
         <h1>
-          الاجهزة
+          المستشفيات
         </h1>
         <ol class="breadcrumb">
           <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-          <li class="active"> الاجهزة</li>
+          <li class="active"> المستشفيات</li>
         </ol>
       </section>
       <!-- Main content -->
@@ -47,42 +47,36 @@
           <div class="col-xs-12">
             <div class="box">
               <div class="box-header with-border">
-                <a href="#addnew" data-toggle="modal" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-plus"></i> اضافة الايصال جديد</a>
+                <a href="#addnew" data-toggle="modal" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-plus"></i> إضافة مستشفى جديد</a>
               </div>
               <div class="box-body">
                 <table id="arabic_table" class="table table-bordered">
                   <thead>
-                    <th>صورة المكينة</th>
-                    <th>الاسم</th>
-                    <th>الموديل</th>
-                    <th>شركة الصنع</th>
-                    <th>المستشفى</th>
-                    <th>Tools</th>
+                    <tr>
+                      <th>الاسم</th>
+                      <th>العنوان</th>
+                      <th>الهاتف</th>
+                      <th>الشعار</th>
+                      <th>Tools</th>
+                    </tr>
                   </thead>
                   <tbody>
                     <?php
-                    $sql = "SELECT * FROM machine_type ORDER BY id DESC";
+                    $sql = "SELECT * FROM hospital ORDER BY id DESC";
                     $query = $conn->query($sql);
                     while ($row = $query->fetch_assoc()) {
-                      $id = $row['hospital_id'];
-                      $hospital_sql = "SELECT * FROM hospital WHERE id='$id'";
-                      $hospital_query = $conn->query($hospital_sql);
-                      $hospital = $hospital_query->fetch_assoc();
-
                       echo "
-                            <tr>
-                                <td><img src='" . $row['image'] . "' width='100' height='100'></td>
-                                <td>" . $row['name'] . "</td>
-                                <td>" . $row['model'] . "</td>
-                                <td>" . $row['manufacturer_name'] . "</td>
-                             
-                                <td>" . $hospital['name'] . "</td>
-                                <td>
-                                    <button class='btn btn-success btn-sm btn-flat edit' data-id='" . $row['id'] . "'><i class='fa fa-edit'></i> تعديل</button>
-                                    <button class='btn btn-danger btn-sm btn-flat delete' data-id='" . $row['id'] . "'><i class='fa fa-trash'></i> حذف</button>
-                                </td>
-                            </tr>
-                        ";
+                        <tr>
+                          <td>" . htmlspecialchars($row['name']) . "</td>
+                          <td>" . htmlspecialchars($row['address']) . "</td>
+                          <td>" . htmlspecialchars($row['phone']) . "</td>
+                          <td><img src='images/" . htmlspecialchars($row['logo']) . "' width='50' height='50'></td>
+                          <td>
+                            <button class='btn btn-success btn-sm btn-flat edit' data-id='" . htmlspecialchars($row['id']) . "'><i class='fa fa-edit'></i> تعديل</button>
+                            <button class='btn btn-danger btn-sm btn-flat delete' data-id='" . htmlspecialchars($row['id']) . "'><i class='fa fa-trash'></i> حذف</button>
+                          </td>
+                        </tr>
+                      ";
                     }
                     ?>
                   </tbody>
@@ -95,15 +89,12 @@
     </div>
 
     <?php include 'includes/footer.php'; ?>
-    <?php include 'includes/machine_type_modal.php'; ?>
+    <?php include 'includes/hospital_modal.php'; ?>
   </div>
   <?php include 'includes/scripts.php'; ?>
   <script>
     $(document).ready(function() {
-
       $('.select2').select2();
-
-
     });
 
     $(function() {
@@ -116,7 +107,6 @@
 
       $('.delete').click(function(e) {
         e.preventDefault();
-
         $('#delete').modal('show');
         var id = $(this).data('id');
         getRow(id);
@@ -126,24 +116,20 @@
     function getRow(id) {
       $.ajax({
         type: 'POST',
-        url: 'machine_type_row.php',
+        url: 'hospital_row.php',
         data: {
           id: id
         },
         dataType: 'json',
         success: function(response) {
-
-          // Additional code to fill in fields in the "edit" modal
-
           $('#edit input[name="name"]').val(response.name);
-          $('#edit select[name="hospital_id"]').val(response.hospital_id);
-          $('#edit input[name="machine_type_id"]').val(response.id);
-          $('#edit input[name="manufacturer_name"]').val(response.manufacturer_name);
-          $('#edit input[name="model"]').val(response.model);
-
-          $('#delete input[name="machine_type_id"]').val(response.id);
-          $('#delete #machine_type_title').text(response.name);
-          $('#edit input[name="image"]').val(response.image);
+          $('#edit input[name="address"]').val(response.address);
+          $('#edit input[name="phone"]').val(response.phone);
+          $('#edit input[name="id"]').val(response.id);
+          
+          $('#delete input[name="id"]').val(response.id);
+          $('#delete #hospital_name').text(response.name);
+          $('#edit input[name="logo"]').val(response.logo);
         }
       });
     }

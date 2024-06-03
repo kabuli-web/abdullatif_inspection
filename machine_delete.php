@@ -2,17 +2,17 @@
 include 'includes/session.php';
 
 if (isset($_POST['delete'])) {
-    $id = $_POST['machine_type_id'];
+    $id = $_POST['machine_id'];
 
     // Prepare a DELETE statement
-    $stmt = $conn->prepare("DELETE FROM machine_type WHERE id = ?");
+    $stmt = $conn->prepare("DELETE FROM machine WHERE id = ?");
     if ($stmt) {
         // Bind parameters
         $stmt->bind_param("i", $id);
 
         // Execute the statement
         if ($stmt->execute()) {
-            $_SESSION['success'] = 'تم حذف موديل الماكينة بنجاح';
+            $_SESSION['success'] = 'تم حذف  الماكينة بنجاح';
         } else {
             $_SESSION['error'] = $stmt->error;
         }
@@ -26,4 +26,4 @@ if (isset($_POST['delete'])) {
     $_SESSION['error'] = 'يرجى تحديد الماكينة المراد حذفها';
 }
 
-header('location: machine_type.php');
+header('location: machine.php');

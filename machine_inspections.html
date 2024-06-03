@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Details</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Almarai:wght@300&display=swap">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+        h1 {
+    font-family: 'Almarai', sans-serif;
+    font-weight: 600;
+    }
+
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">مؤسسة عبداللطيف للتجارة</h1>
+            <h3 class="text-center mb-4">Machine and Inspection Details</h3>
+            
+        </div>
+    </div>
+
+    <!-- Machine and Hospital Details -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Hospital Details</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> <span id="hospitalName"></span></p>
+                    <p><strong>Address:</strong> <span id="hospitalAddress"></span></p>
+                    <p><strong>Phone:</strong> <span id="hospitalPhone"></span></p>
+                    <p><strong>Logo:</strong> <img style="width: 100px;" id="hospitalLogo" src="" alt="Hospital Logo" class="img-fluid"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Machine Image</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong></strong> <img style="width: 300px;" id="machineImage" src="" alt="machineImage" class="img-fluid"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Machine Details</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Serial Number:</strong> <span id="machineSerialNumber"></span></p>
+                    <p><strong>Machine Type:</strong> <span id="machineType"></span></p>
+                    <p><strong>Machine Model:</strong> <span id="machineModel"></span></p>
+                    <p><strong>Machine Manufacturing Company:</strong> <span id="machineManufacturingCompany"></span></p>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Inspection Details -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Inspections</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Next Inspection Date</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inspectionTableBody">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery and Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Fetch and display machine, hospital, and inspection details
+        var machineId = getParameterByName('id'); // Assuming the machine ID is passed as a query parameter
+
+        $.ajax({
+            url: 'fetch_machine_details.php',
+            type: 'GET',
+            data: { machine_id: machineId },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    var machine = response.data.machine;
+                    var hospital = response.data.hospital;
+                    var inspections = response.data.inspections;
+
+                    // Populate machine details
+                    $('#machineSerialNumber').text(machine.serial_number);
+                    $('#machineType').text(machine.name); // Assuming 'name' is the name of the machine type
+                    $('#machineModel').text(machine.model); // Assuming 'model' is the model of the machine
+                    $('#machineManufacturingCompany').text(machine.manufacturer_company); // Assuming 'manufacturer_company' is the manufacturing company
+                    $('#machineImage').attr('src', machine.image);
+                    // Populate hospital details
+                    $('#hospitalName').text(hospital.name);
+                    $('#hospitalAddress').text(hospital.address);
+                    $('#hospitalPhone').text(hospital.phone);
+                    $('#hospitalLogo').attr('src', "images/" + hospital.logo);
+                    
+
+
+                    // Populate inspections table
+                    inspections.forEach(function (inspection) {
+                        $('#inspectionTableBody').append(`
+                            <tr>
+                                <td>${inspection.inspection_date}</td>
+                                <td>${inspection.next_inspection_date}</td>
+                                <td>${inspection.inspection_type}</td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    alert('Failed to fetch details.');
+                }
+            },
+            error: function () {
+                alert('Error fetching details.');
+            }
+        });
+
+        function getParameterByName(name) {
+            var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+            return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+        }
+    });
+</script>
+</body>
+</html>

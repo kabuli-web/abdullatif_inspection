@@ -3,7 +3,7 @@
 <head>
   	<meta charset="utf-8">
   	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-  	<title>اناقة اوشن للخياطة الرجالية</title>
+  	<title>مؤسسة عبداللطيف للتجارة</title>
     <link rel="icon" type="image/png" href="https://dashboard.alraee.group/images/raee.png">
   	<!-- Tell the browser to be responsive to screen width -->
   	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">

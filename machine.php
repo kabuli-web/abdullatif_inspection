@@ -52,41 +52,51 @@
               <div class="box-body">
                 <table id="arabic_table" class="table table-bordered">
                   <thead>
-                    <th>صورة المكينة</th>
-                    <th>الاسم</th>
-                    <th>الموديل</th>
-                    <th>شركة الصنع</th>
-                    <th>المستشفى</th>
-                    <th>Tools</th>
+                    <tr>
+                      <th>صورة المكينة</th>
+                      <th>الرقم التسلسلي</th>
+                      <th>المستشفى</th>
+                      <th>موديل الماكينة</th>
+                      <th> صفحة الزيارات </th>
+                      <th>Tools</th>
+                    </tr>
                   </thead>
                   <tbody>
                     <?php
-                    $sql = "SELECT * FROM machine_type ORDER BY id DESC";
-                    $query = $conn->query($sql);
-                    while ($row = $query->fetch_assoc()) {
-                      $id = $row['hospital_id'];
-                      $hospital_sql = "SELECT * FROM hospital WHERE id='$id'";
-                      $hospital_query = $conn->query($hospital_sql);
-                      $hospital = $hospital_query->fetch_assoc();
+                 $sql = "SELECT machine.id, machine.serial_number, hospital.name AS hospital_name, hospital.logo AS hospital_logo, machine_type.name AS machine_type_name, machine_type.image
+                 FROM machine
+                 JOIN hospital ON machine.hospital_id = hospital.id
+                 JOIN machine_type ON machine.machine_type_id = machine_type.id
+                 ORDER BY machine.id DESC";
+                 
+                   
 
-                      echo "
-                            <tr>
-                                <td><img src='" . $row['image'] . "' width='100' height='100'></td>
-                                <td>" . $row['name'] . "</td>
-                                <td>" . $row['model'] . "</td>
-                                <td>" . $row['manufacturer_name'] . "</td>
-                             
-                                <td>" . $hospital['name'] . "</td>
-                                <td>
-                                    <button class='btn btn-success btn-sm btn-flat edit' data-id='" . $row['id'] . "'><i class='fa fa-edit'></i> تعديل</button>
-                                    <button class='btn btn-danger btn-sm btn-flat delete' data-id='" . $row['id'] . "'><i class='fa fa-trash'></i> حذف</button>
-                                </td>
-                            </tr>
-                        ";
+                    $query = $conn->query($sql);
+                    if (!$query) {
+                      // Query failed
+                      echo "<tr><td colspan='6'>Error: " . $conn->error . "</td></tr>";
+                    } else {
+                      while ($row = $query->fetch_assoc()) {
+                        echo "
+                <tr>
+                    <td><img src='" . $row['image'] . "' width='100' height='100'></td>
+                    <td>" . htmlspecialchars($row['serial_number']) . "</td>
+                    <td>" . htmlspecialchars($row['hospital_name'])  . " <img src='images/" . $row['hospital_logo'] . "' width='50' height='50'></td>
+                    <td>" . htmlspecialchars($row['machine_type_name']) . "</td>
+                    <td><a href='machine_inspections.html?id=" . htmlspecialchars($row['id']) . "'> <button class='btn btn-success btn-sm btn-flat ' ><i class='fa fa-medkit'></i> الزيارات</button></a> </td>
+                    <td>
+                        <button class='btn btn-success btn-sm btn-flat edit' data-id='" . htmlspecialchars($row['id']) . "'><i class='fa fa-edit'></i> تعديل</button>
+                        <button class='btn btn-danger btn-sm btn-flat delete' data-id='" . htmlspecialchars($row['id']) . "'><i class='fa fa-trash'></i> حذف</button>
+                    </td>
+                </tr>
+                ";
+                      }
                     }
                     ?>
                   </tbody>
                 </table>
+
+
               </div>
             </div>
           </div>
@@ -95,7 +105,7 @@
     </div>
 
     <?php include 'includes/footer.php'; ?>
-    <?php include 'includes/machine_type_modal.php'; ?>
+    <?php include 'includes/machine_modal.php'; ?>
   </div>
   <?php include 'includes/scripts.php'; ?>
   <script>
@@ -126,7 +136,7 @@
     function getRow(id) {
       $.ajax({
         type: 'POST',
-        url: 'machine_type_row.php',
+        url: 'machine_row.php',
         data: {
           id: id
         },
@@ -135,15 +145,13 @@
 
           // Additional code to fill in fields in the "edit" modal
 
-          $('#edit input[name="name"]').val(response.name);
+          $('#edit input[name="serial_number"]').val(response.serial_number);
           $('#edit select[name="hospital_id"]').val(response.hospital_id);
-          $('#edit input[name="machine_type_id"]').val(response.id);
-          $('#edit input[name="manufacturer_name"]').val(response.manufacturer_name);
-          $('#edit input[name="model"]').val(response.model);
+          $('#edit select[name="machine_type_id"]').val(response.machine_type_id);
+          $('#edit input[name="machine_id"]').val(response.id);
 
-          $('#delete input[name="machine_type_id"]').val(response.id);
-          $('#delete #machine_type_title').text(response.name);
-          $('#edit input[name="image"]').val(response.image);
+          $('#delete input[name="machine_id"]').val(response.id);
+          $('#delete #serial_number').text(response.serial_number);
         }
       });
     }

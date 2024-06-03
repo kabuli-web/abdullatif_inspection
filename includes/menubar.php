@@ -17,7 +17,7 @@
        
      
         <li class=""><a href="machine_type.php"><i class="fas fa-file-invoice"></i><span> موديلات الاجهزة </span></a></li>
-        <li class=""><a href="machine.php"><i class="fas fa-file-invoice"></i><span> موديلات الاجهزة </span></a></li>
+        <li class=""><a href="machine.php"><i class="fas fa-file-invoice"></i><span>  الاجهزة </span></a></li>
         <li class=""><a href="inspection.php"><i class="fas fa-file-invoice"></i><span> الزيارات </span></a></li>
         <li class=""><a href="hospital.php"><i class="fas fa-file-invoice"></i><span> المستشفيات </span></a></li>
 
